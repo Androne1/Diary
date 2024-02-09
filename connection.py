@@ -8,9 +8,10 @@ database = {
     "host":"localhost",
     "port":5432
 }
-student_id = 1
-teacher_id = 1
 subject_id = 1
+schedule_id = 1
+
+teachers_list = []
 
 def get_connection(func):
     def wrapper(cur = None):
