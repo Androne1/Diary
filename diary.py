@@ -73,8 +73,12 @@ def add_teacher(cur = None):
 
 @get_connection
 def add_subject(cur = None):
+    global subject_id
+    global 
     create_table_subjects(cur)
     subject_name = input('Назовите предмет: ')
+    teacher = input("Назовите фамилию имя и отчество учителя, ведущего данный предмет: ")
+    subject_id += 1
 
 def go_out(cur = None):
     return
