@@ -42,9 +42,10 @@ def create_table_marks(cur = None):
     cur.execute("""
                 create table if not exists marks
                 (
-                    mark_id int primary key
-                    fk_student_id references students(student_id)
-                    fk_subject_id references subjects(subject_id)
+                    mark_id int primary key,
+                    mark varchar(1) not null,
+                    fk_student_id int references students(student_id),
+                    fk_subject_id int references subjects(subject_id)
                 )
                 """)
 

@@ -31,3 +31,14 @@ def read_subjects_table(cur = None):
     for subject in subjects:
         print(*subject, sep="\t")
     return subjects
+
+
+@get_connection
+def read_marks_table(cur=None):
+    cur.execute("select * from subjects")
+    marks = cur.fetchall()
+    headers = "№\tОценка\t№ ученика\t№ предмета"
+    print(headers)
+    for mark in marks:
+        print(*mark, sep="\t")
+    return marks
