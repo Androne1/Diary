@@ -11,7 +11,6 @@ database = {
 subject_id = 1
 schedule_id = 1
 
-teachers_list = []
 
 def get_connection(func):
     def wrapper(cur = None):

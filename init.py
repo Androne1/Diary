@@ -43,7 +43,7 @@ def create_table_marks(cur = None):
                 create table if not exists marks
                 (
                     mark_id int primary key,
-                    mark varchar(1) not null,
+                    mark smallint not null,
                     fk_student_id int references students(student_id),
                     fk_subject_id int references subjects(subject_id)
                 )

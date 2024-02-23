@@ -13,13 +13,14 @@ def read_students_table(cur=None):
 
 @get_connection
 def read_teachers_table(cur=None):
-    cur.execute("select * from students")
+    cur.execute("select * from teachers")
     teachers = cur.fetchall()
     headers = "№\tИмя\tФамилия\tОтчество\tПол\tНомер телефона\tДата рождения"
     print(headers)
+    lst = []
     for teacher in teachers:
         print(*teacher, sep="\t")
-    return teachers
+        lst.append(teacher)
 
 
 @get_connection

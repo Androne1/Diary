@@ -2,6 +2,9 @@ from connection import *
 from init import *
 from read_info import *
 
+
+teachers_list = []
+
 def check_field(field):
     alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     if not field:
@@ -65,41 +68,51 @@ def add_teachers(cur = None):
     identificator, first_name, last_name, pater_name, gender, phone_number, birthday = add_student_or_teacher("учителя", "teachers", cur)
     teachers_list.append((first_name, last_name, pater_name))
 
+
 @get_connection
-def add_subject(cur = None):
-    global teachers_list
+def add_subject(cur=None, teachers_list=[]):
     create_table_subjects(cur)
-    teachers_list = read_teachers_table(cur)
     subject_name = input('Назовите предмет: ')
+    teachers_list = read_teachers_table(cur)
     teacher_first_name = input("Назовите имя учителя, ведущего данный предмет: ")
-    if teachers_list.count(teacher_first_name) == 0:
+    try:
+        cur.execute("SELECT * FROM teachers WHERE first_name='%s';"%(teacher_first_name))
+    except:
         input("Введите имя учителя, который есть в списке: ")
+        add_subject()
     teacher_last_name = input("Назовите фамилию учителя, ведущего данный предмет: ")
-    if teachers_list.count(teacher_last_name) == 0:
+    try:
+        cur.execute("SELECT * FROM teachers WHERE last_name='%s';"%(teacher_last_name))
+    except:
         input("Введите фамилию учителя, который есть в списке: ")
     teacher_pater_name = input("Назовите отчество учителя, ведущего данный предмет: ")
-    if teachers_list.count(teacher_pater_name) == 0:
+    try:
+        cur.execute("SELECT * FROM teachers WHERE pater_name='%s';"%(teacher_pater_name))
+    except:
         input("Введите отчество учителя, который есть в списке: ")
-    if (teacher_first_name, teacher_last_name, teacher_pater_name) in teachers_list:
-        fk_teacher_id = teachers_list.index(teacher_first_name) + 1
-        cur.execute("""
-                    select count(*) from subjects
-                    """)
-        cancel()
-        subject_id = cur.fetchone[0]()
-        try:
-            cur.execute(f"""
-                        insert into subjects
-                        values
-                        ({subject_id}, '{subject_name}', {fk_teacher_id})
-                        """)        
-        except:
-            print("Что-то не так")
-    else:
-        print("Такого учителя нет в списке")
-        if cancel == False:
-            print("Операция преравна")
-            return None
+    cur.execute("""
+                select count(*) from teachers;
+                """)
+    fk_teacher_id = cur.fetchone()[0]+1
+    cur.execute("""
+                select count(*) from subjects;
+                """)
+    
+    subject_id = cur.fetchone()[0] + 1
+    if cancel() == False:
+        print("Операция преравна")
+        return None
+    try:
+        cur.execute(f"""
+                    insert into subjects
+                    values
+                    ({subject_id}, '{subject_name}', {fk_teacher_id})
+                    """)        
+    except:
+        print("Что-то не так")
+    # else:
+    #     print("Такого учителя нет в списке")
+
 
 def make_schedule(cur = None):
     global schedule_id
@@ -109,8 +122,8 @@ def add_mark(cur = None):
     create_table_marks(cur)
     read_students_table(cur)
     identificator = ""
-    while not identificator.isdigit:
-        identificator = input("Какому ученику ставим оценку?")
+    while not identificator.isdigit():
+        identificator = input("Какому ученику ставим оценку? ")
     identificator = int(identificator)
     try:
         cur.execute("""
@@ -123,8 +136,8 @@ def add_mark(cur = None):
         return None
     read_subjects_table(cur)
     subject_id = ""
-    while not subject_id.isdigit:
-        subject_id = input("По какому предмету ставим оценку?")
+    while not subject_id.isdigit():
+        subject_id = input("По какому предмету ставим оценку? ")
     subject_id = int(subject_id)
     try:
         cur.execute(
@@ -138,21 +151,22 @@ def add_mark(cur = None):
     except:
         print("Нет такого предмета")
         return None
-    mark = ""
-    while mark not in "12345н":
-        mark = input("Какую оценку ставим(1 - 5 или н)? ")
+    mark = input("Какую оценку ставим? ")
+    while mark not in "12345":
+        mark = input("Какую оценку ставим? ")
+    mark = int(mark)
     cancel()
     cur.execute(
         """
-                    select count(*) from subjects
+                    select count(*) from marks
                     """
     )
-    mark_id = cur.fetchone()[0]
+    mark_id = cur.fetchone()[0] + 1
     try:
         cur.execute(f"""
                     insert into marks
                     values
-                    ({mark_id}, '{mark}', {identificator}, {subject_id})
+                    ({mark_id}, {mark}, {identificator}, {subject_id})
                     """)
     except:
         print("Что-то не так")
@@ -208,7 +222,7 @@ def main_menu(cur = None):
             make_schedule(cur)
         if action == '5':
             add_mark(cur)
-        if action == "6":
+        if action == '6':
             read_students_table(cur)
         if action =='9':
             read_teachers_table(cur)
@@ -217,7 +231,7 @@ def main_menu(cur = None):
         if action == '12':
             read_marks_table(cur)
         if action == '13':
-            run = quit(cur)
+            run = quit()
         if action == '14':
             create_all_tables()
         input("Нажмите Enter для продолжения")
