@@ -211,6 +211,7 @@ def main_menu(cur = None):
         print('12 - посмотреть оценки')
         print('13 - выйти из программы')
         print('14 - инициализировать таблицы')
+        print('15 - посмотреть среднюю общую оценку')
         action = input(f"Что вы хотите сделать, {name}? ")
         if action == '1':
             add_student(cur)
@@ -234,6 +235,8 @@ def main_menu(cur = None):
             run = quit()
         if action == '14':
             create_all_tables()
+        if action == '15':
+            read_student_result()
         input("Нажмите Enter для продолжения")
 
 def create_all_tables():
